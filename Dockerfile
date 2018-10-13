@@ -43,7 +43,11 @@ ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 
-#WORKDIR /workspace
+# Install NSFW model and python helper
+RUN cd /opt && git clone https://github.com/yahoo/open_nsfw.git
+ENV PYTHONPATH /opt/open_nsfw:$PYTHONPATH
+ENV PATH /opt/open_nsfw:$PATH
+
 
 # Build and install app dependencies
 ADD ./requirements.txt /tmp/requirements.txt
@@ -53,10 +57,9 @@ RUN pip install --no-cache-dir -q -r /tmp/requirements.txt
 RUN pip install --ignore-installed pyOpenSSL --upgrade
 
 # Add our code
-ADD ./nsfw_model /opt/nsfw_model
 ADD ./web /opt/web/
 WORKDIR /opt/web
 
 # Run the app.  CMD is required to run on Heroku
 # $PORT is set by Heroku
-CMD gunicorn --bind 0.0.0.0:$PORT app:app
+CMD gunicorn --timeout 360 --bind 0.0.0.0:$PORT app:app
