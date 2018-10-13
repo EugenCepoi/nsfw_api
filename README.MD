@@ -5,41 +5,49 @@ It relies on [open_nsfw](https://github.com/yahoo/open_nsfw), which provides a p
 The current project doesn't aim at improving the quality of the predictions. The main goal is to provide a ready to deploy
 solution for people that might need this kind of service for free.
 
-### Deploying
+### Running and Deploying
 
 The python REST API, with Caffe and open_nsfw are packaged all together in a Docker image. So in theory you could just 
-use an [existing build from docker hub] or build your own.
-
-#### Using an existing build
-
-TODO
+use an [existing build from Docker Hub](https://hub.docker.com/r/eugencepoi/nsfw_api/) or build your own.
 
 #### Running locally
 
-First you will need to install Docker for your OS. Then it should be as simple as running `docker-compose build` to build 
-the image and `docker-compose up` to start it. You should be to test it at `http://localhost:5000/?url=https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png`.
+The API and everything needed for it to work is part of a docker image. So first you will need to install Docker for your OS.
+Then you can use a prebuilt image.
+
+```docker run -it -p 127.0.0.1:5000:5000/tcp --env PORT=5000 eugencepoi/nsfw_api:latest```
+
+The API should be up and running at
+
+```
+http://localhost:5000/?url=https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png`
+```
+
+Or if you want to tweak things around you can clone the repository and then build the image your self.
+Build it with `docker-compose build` and use `docker-compose up` to start the container.
 
 #### Running on Heroku
 
 A simple and quick option to get it up and ready for you to use from your website is via Heroku. You will need an Heroku 
-account for that. Then it's as simple as:
+account for that. If you are building your own image from a clone of this repository, then from inside the project directory do:
 
  - Login to the Heroku container registry `heroku container:login`
  - Create an app if one doesn't already exist `heroku create YOUR_APP_NAME`
- - Upload the image `heroku container:push web`
- - Release it to your app `heroku container:release web` 
+ - Upload the image `heroku container:push web` (add optionally `--app YOUR_APP_NAME`)
+ - Release it to your app `heroku container:release web` (add optionally `--app YOUR_APP_NAME`)
 
 The service should be up and running. It might take a bit of time for the first request to be processed, though subsequent ones
 should be faster.
+
 
 #### Running in offline mode
 
 For now running in batch/offline mode is outside of the scope of the project but any contribution to do so is welcome.
 
-### Usage
+
+### API Usage
 
 You can use the classification API via two endpoints.
-
 
 #### Single prediction
 
@@ -65,7 +73,6 @@ and `error_reason` instead of the `score`:
   "url": "https://foobar"
 }
 ```
-
 
 ##### Batch predictions
 

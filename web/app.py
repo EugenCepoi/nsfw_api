@@ -74,6 +74,7 @@ def classify_from_url(image_entry, nsfw_net):
     except Exception, e:
         result = {'error_code': 500, 'error_reason': e.message}
 
+
     result.update(image_entry)
     return result
 
