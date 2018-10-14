@@ -1,3 +1,5 @@
+# Nudity image detection HTTP API
+
 This project provides a ready to deploy REST API allowing to predict if an image is offensive or has adult content.
 
 It relies on [open_nsfw](https://github.com/yahoo/open_nsfw), which provides a pre-trained open source neural network model for [Caffe](https://github.com/BVLC/caffe).
@@ -74,11 +76,15 @@ and `error_reason` instead of the `score`:
 }
 ```
 
-##### Batch predictions
-
 Remark that doing the classification isn't a fast operation so you shouldn't call this API in places where you want the 
-response in real time/low latency (for ex. to display it to the user), but instead call the API periodically. For that 
-purpose use the batch classification API as follows.
+response in real time/low latency (for ex. to display it to the user), but instead call the API periodically for a batch
+of images using the endpoint below.
+
+#### Batch predictions with streamed responses
+
+The batch endpoint takes as input a list of images to classify and returns the result for each image. The response is 
+being streamed back, so you could read it in a streaming fashion and process the results as they come in (as opposed 
+to wait for the entire response before processing it). For that purpose use the batch classification API as follows.
 
 ```
 curl -X POST -H 'Content-Type: application/json' \
@@ -94,11 +100,7 @@ curl -X POST -H 'Content-Type: application/json' \
 Each entry should have an `url` property pointing to the image accessible over HTTP/HTTPS. Any extra attribute will be 
 preserved and sent back in the response. This allows easily to identify each entry and eventually pass along some context.
 
-Note that the response is being streamed  back, so you could read it in a streaming fashion and process the results as 
-they come in (as opposed to wait for the entire response before processing it). This is mostly done to work around
-Heroku's 30s Request timeout.
-
-Note that failing to process one entry in the batch will not fail the entire operation, instead the result for this single
+Failing to process one entry in the batch will not fail the entire operation, instead the result for this single
 entry will report the error. However if there is an error in handling the input JSON or some other global error the format
 of the response is not guaranteed so you should check the response status code.
 
