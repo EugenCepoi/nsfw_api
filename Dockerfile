@@ -62,4 +62,4 @@ WORKDIR /opt/web
 
 # Run the app.  CMD is required to run on Heroku
 # $PORT is set by Heroku
-CMD gunicorn --timeout 360 --bind 0.0.0.0:$PORT app:app
+CMD gunicorn --timeout 360 --bind 0.0.0.0:$PORT -k gevent --worker-connections 32 app:app
