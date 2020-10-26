@@ -1,9 +1,10 @@
 version: '2'
 services:
   web:
+    environment:
+      - PORT=5000
     build: .
     ports:
       - "5000:5000"
-    env_file: .env
     volumes:
       - ./web:/opt/web
